@@ -1,4 +1,8 @@
 defmodule Membrane.Funnel do
+  @moduledoc"""
+  Element that can be used for collecting data from multiple inputs and sending it through one
+  output.
+  """
   use Membrane.Filter
 
   def_input_pad :input, demand_unit: :buffers, caps: :any, availability: :on_request
