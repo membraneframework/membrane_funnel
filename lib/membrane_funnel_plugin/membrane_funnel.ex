@@ -29,8 +29,13 @@ defmodule Membrane.Funnel do
   end
 
   @impl true
-  def handle_pad_added(Pad.ref(:input, _id) = pad, _ctx, state) do
+  def handle_pad_added(Pad.ref(:input, _id) = pad, %{playback_state: :playing}, state) do
     {{:ok, [demand: {pad, 1}, event: {:output, %Funnel.NewInputEvent{}}]}, state}
+  end
+
+  @impl true
+  def handle_pad_added(Pad.ref(:input, _id), _ctx, state) do
+    {:ok, state}
   end
 
   @impl true
