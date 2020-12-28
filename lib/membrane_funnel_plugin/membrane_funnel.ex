@@ -1,9 +1,11 @@
 defmodule Membrane.Funnel do
-  @moduledoc"""
+  @moduledoc """
   Element that can be used for collecting data from multiple inputs and sending it through one
   output.
   """
   use Membrane.Filter
+
+  alias Membrane.Funnel
 
   def_input_pad :input, demand_unit: :buffers, caps: :any, availability: :on_request
   def_output_pad :output, caps: :any
@@ -24,6 +26,27 @@ defmodule Membrane.Funnel do
   @impl true
   def handle_process(Pad.ref(:input, _id), buffer, _ctx, state) do
     {{:ok, buffer: {:output, buffer}, redemand: :output}, state}
+  end
+
+  @impl true
+  def handle_pad_added(Pad.ref(:input, _id) = pad, _ctx, state) do
+    {{:ok, [demand: {pad, 1}, event: {:output, %Funnel.NewInputEvent{pad: pad}}]}, state}
+  end
+
+  @impl true
+  def handle_event(:output, %Funnel.NewInputResponseEvent{} = response_event, ctx, state) do
+    %Funnel.NewInputResponseEvent{pad: pad, event: event} = response_event
+    if pad == :all do
+      events = ctx |> inputs_data() |> Enum.map(&{:event, {&1.ref, event}})
+      {{:ok, events}, state}
+    else
+      {{:ok, event: {pad, event}}, state}
+    end
+  end
+
+  @impl true
+  def handle_event(_pad, _event, ctx, state) do
+    {:ok, state}
   end
 
   @impl true
