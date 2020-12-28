@@ -30,24 +30,7 @@ defmodule Membrane.Funnel do
 
   @impl true
   def handle_pad_added(Pad.ref(:input, _id) = pad, _ctx, state) do
-    {{:ok, [demand: {pad, 1}, event: {:output, %Funnel.NewInputEvent{pad: pad}}]}, state}
-  end
-
-  @impl true
-  def handle_event(:output, %Funnel.NewInputResponseEvent{} = response_event, ctx, state) do
-    %Funnel.NewInputResponseEvent{pad: pad, event: event} = response_event
-
-    if pad == :all do
-      events = ctx |> inputs_data() |> Enum.map(&{:event, {&1.ref, event}})
-      {{:ok, events}, state}
-    else
-      {{:ok, event: {pad, event}}, state}
-    end
-  end
-
-  @impl true
-  def handle_event(_pad, _event, _ctx, state) do
-    {:ok, state}
+    {{:ok, [demand: {pad, 1}, event: {:output, %Funnel.NewInputEvent{}}]}, state}
   end
 
   @impl true
