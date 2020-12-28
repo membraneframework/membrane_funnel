@@ -23,7 +23,7 @@ end
 ```
 
 ## Usage
-Playing this pipeline should copy two files `a.txt` and `b.txt` into file `c.txt`
+Playing this pipeline should merge two files `a.txt` and `b.txt` into file `c.txt`
 
 ```elixir
 defmodule FunnelDemo do
