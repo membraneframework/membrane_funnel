@@ -1,34 +1,62 @@
-# Membrane Multimedia Framework: Template Plugin
+# Membrane Funnel plugin
 
-[![Hex.pm](https://img.shields.io/hexpm/v/membrane_template_plugin.svg)](https://hex.pm/packages/membrane_template_plugin)
-[![CircleCI](https://circleci.com/gh/membraneframework/membrane_template_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_template_plugin)
+[![Hex.pm](https://img.shields.io/hexpm/v/membrane_template_plugin.svg)](https://hex.pm/packages/membrane_funnel_plugin)
+[![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/membrane_funnel_plugin/)
+[![CircleCI](https://circleci.com/gh/membraneframework/membrane_template_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_funnel_plugin)
 
-This repository contains a template for new elements.
+Membrane plugin for funneling.
 
-Check out different branches for other flavours of template.
+It can be used for collecting data from multiple inputs and sending it through one output.
 
 It is part of [Membrane Multimedia Framework](https://membraneframework.org).
 
 ## Installation
 
-The package can be installed by adding `membrane_template_plugin` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `membrane_funnel_plugin` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:membrane_template_plugin, "~> 0.1.0"}
+    {:membrane_funnel_plugin, "~> 0.1.0"}
   ]
 end
 ```
 
 ## Usage
+Playing this pipeline should merge two files `a.txt` and `b.txt` into file `c.txt`
 
-TODO
+```elixir
+defmodule FunnelDemo do
+  use Membrane.Pipeline
+
+  def handle_init(_) do
+    children = [
+      a_source: %Membrane.File.Source{location: "a.txt"},
+      b_source: %Membrane.File.Source{location: "b.txt"},
+      funnel: Membrane.Funnel,
+      sink: %Membrane.File.Sink{location: "c.txt"}
+    ]
+
+    links = [
+      link(:a_source) |> to(:funnel),
+      link(:b_source) |> to(:funnel),
+      link(:funnel) |> to(:sink)
+    ]
+
+    spec = %ParentSpec{children: children, links: links}
+    {{:ok, spec: spec}, %{}}
+  end
+end
+```
+
+For more examples please refer to our [echo demo](https://github.com/membraneframework/membrane_demo/tree/echo/webrtc/echo)
+where we use funnel plugin to send two RTP streams using the same connection, or our integration
+tests.
 
 ## Copyright and License
 
-Copyright 2020, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane_template_plugin)
+Copyright 2020, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane_funnel_plugin)
 
-[![Software Mansion](https://logo.swmansion.com/logo?color=white&variant=desktop&width=200&tag=membrane-github)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane_template_plugin)
+[![Software Mansion](https://logo.swmansion.com/logo?color=white&variant=desktop&width=200&tag=membrane-github)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane_funnel_plugin)
 
 Licensed under the [Apache License, Version 2.0](LICENSE)
