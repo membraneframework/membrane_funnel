@@ -1,8 +1,8 @@
 # Membrane Funnel plugin
 
-[![Hex.pm](https://img.shields.io/hexpm/v/membrane_template_plugin.svg)](https://hex.pm/packages/membrane_funnel_plugin)
+[![Hex.pm](https://img.shields.io/hexpm/v/membrane_funnel_plugin.svg)](https://hex.pm/packages/membrane_funnel_plugin)
 [![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/membrane_funnel_plugin/)
-[![CircleCI](https://circleci.com/gh/membraneframework/membrane_template_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_funnel_plugin)
+[![CircleCI](https://circleci.com/gh/membraneframework/membrane_funnel_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_funnel_plugin)
 
 Membrane plugin for funneling.
 
