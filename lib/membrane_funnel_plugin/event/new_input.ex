@@ -7,5 +7,6 @@ defmodule Membrane.Funnel.NewInputEvent do
   @derive Membrane.EventProtocol
 
   @type t :: %__MODULE__{pad: Membrane.Pad.ref_t()}
-  defstruct pad: nil
+  @enforce_keys [:pad]
+  defstruct @enforce_keys
 end
