@@ -4,7 +4,7 @@
 [![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/membrane_funnel_plugin/)
 [![CircleCI](https://circleci.com/gh/membraneframework/membrane_funnel_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_funnel_plugin)
 
-Membrane plugin for funneling.
+Membrane plugin for merging multiple input streams into a single output
 
 It can be used for collecting data from multiple inputs and sending it through one output.
 
