@@ -27,6 +27,9 @@ defmodule Membrane.FunnelTest do
 
     :ok = Testing.Pipeline.play(pipeline)
 
+    assert_receive {Membrane.Testing.Pipeline, ^pipeline,
+                    {:playback_state_changed, :prepared, :playing}}
+
     data
     |> Enum.flat_map(&[&1, &1])
     |> Enum.each(fn payload ->
@@ -35,5 +38,10 @@ defmodule Membrane.FunnelTest do
 
     assert_end_of_stream(pipeline, :sink)
     refute_sink_buffer(pipeline, :sink, _buffer, 0)
+
+    Membrane.Pipeline.stop_and_terminate(pipeline)
+
+    assert_receive {Membrane.Testing.Pipeline, ^pipeline,
+                    {:playback_state_changed, :prepared, :stopped}}
   end
 end
