@@ -14,13 +14,12 @@ defmodule Membrane.Funnel do
 
   @impl true
   def handle_init(opts) do
-    {:ok, Map.from_struct(opts)}
+    {:ok, %{end_of_stream: opts.end_of_stream, demands: []}}
   end
 
   @impl true
-  def handle_demand(:output, _size, :buffers, ctx, state) do
-    demands = ctx |> inputs_data() |> Enum.map(&{:demand, {&1.ref, 1}})
-    {{:ok, demands}, state}
+  def handle_demand(:output, _size, :buffers, _ctx, state) do
+    {{:ok, state.demands}, state}
   end
 
   @impl true
@@ -30,12 +29,22 @@ defmodule Membrane.Funnel do
 
   @impl true
   def handle_pad_added(Pad.ref(:input, _id) = pad, %{playback_state: :playing}, state) do
-    {{:ok, [demand: {pad, 1}, event: {:output, %Funnel.NewInputEvent{}}]}, state}
+    demands = [{:demand, {pad, 1}} | state.demands]
+
+    {{:ok, [demand: {pad, 1}, event: {:output, %Funnel.NewInputEvent{}}]},
+     %{state | demands: demands}}
   end
 
   @impl true
-  def handle_pad_added(Pad.ref(:input, _id), _ctx, state) do
-    {:ok, state}
+  def handle_pad_added(Pad.ref(:input, _id) = pad, _ctx, state) do
+    demands = [{:demand, {pad, 1}} | state.demands]
+    {:ok, %{state | demands: demands}}
+  end
+
+  @impl true
+  def handle_pad_removed(Pad.ref(:input, _id) = pad, _ctx, state) do
+    demands = List.delete(state.demands, {:demand, {pad, 1}})
+    {:ok, %{state | demands: demands}}
   end
 
   @impl true
@@ -54,7 +63,7 @@ defmodule Membrane.Funnel do
 
   defp inputs_data(ctx) do
     Enum.flat_map(ctx.pads, fn
-      {_ref, %{direction: :input} = data} -> [data]
+      {Pad.ref(:input, _ref), data} -> [data]
       _output -> []
     end)
   end
