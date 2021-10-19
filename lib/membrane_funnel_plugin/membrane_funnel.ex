@@ -63,7 +63,7 @@ defmodule Membrane.Funnel do
 
   defp inputs_data(ctx) do
     Enum.flat_map(ctx.pads, fn
-      {Pad.ref(:input, _ref), data} -> [data]
+      {Pad.ref(:input, _id), data} -> [data]
       _output -> []
     end)
   end

@@ -39,7 +39,7 @@ defmodule Membrane.FunnelTest do
     assert_end_of_stream(pipeline, :sink)
     refute_sink_buffer(pipeline, :sink, _buffer, 0)
 
-    Membrane.Pipeline.stop_and_terminate(pipeline)
+    Membrane.Pipeline.stop_and_terminate(pipeline, blocking?: true)
 
     assert_receive {Membrane.Testing.Pipeline, ^pipeline,
                     {:playback_state_changed, :prepared, :stopped}}
