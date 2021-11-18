@@ -17,7 +17,7 @@ The package can be installed by adding `membrane_funnel_plugin` to your list of 
 ```elixir
 def deps do
   [
-    {:membrane_funnel_plugin, "~> 0.3.0"}
+    {:membrane_funnel_plugin, "~> 0.4.0"}
   ]
 end
 ```
