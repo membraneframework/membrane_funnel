@@ -7,44 +7,29 @@ defmodule Membrane.Funnel do
 
   alias Membrane.Funnel
 
-  def_input_pad :input, demand_unit: :buffers, caps: :any, availability: :on_request
-  def_output_pad :output, caps: :any
+  def_input_pad :input, demand_mode: :auto, caps: :any, availability: :on_request
+  def_output_pad :output, caps: :any, demand_mode: :auto
 
   def_options end_of_stream: [spec: :on_last_pad | :never, default: :on_last_pad]
 
   @impl true
   def handle_init(opts) do
-    {:ok, %{end_of_stream: opts.end_of_stream, demands: []}}
-  end
-
-  @impl true
-  def handle_demand(:output, _size, :buffers, _ctx, state) do
-    {{:ok, state.demands}, state}
+    {:ok, %{end_of_stream: opts.end_of_stream}}
   end
 
   @impl true
   def handle_process(Pad.ref(:input, _id), buffer, _ctx, state) do
-    {{:ok, buffer: {:output, buffer}, redemand: :output}, state}
+    {{:ok, buffer: {:output, buffer}}, state}
   end
 
   @impl true
-  def handle_pad_added(Pad.ref(:input, _id) = pad, %{playback_state: :playing}, state) do
-    demands = [{:demand, {pad, 1}} | state.demands]
-
-    {{:ok, [demand: {pad, 1}, event: {:output, %Funnel.NewInputEvent{}}]},
-     %{state | demands: demands}}
+  def handle_pad_added(Pad.ref(:input, _id), %{playback_state: :playing}, state) do
+    {{:ok, event: {:output, %Funnel.NewInputEvent{}}}, state}
   end
 
   @impl true
-  def handle_pad_added(Pad.ref(:input, _id) = pad, _ctx, state) do
-    demands = [{:demand, {pad, 1}} | state.demands]
-    {:ok, %{state | demands: demands}}
-  end
-
-  @impl true
-  def handle_pad_removed(Pad.ref(:input, _id) = pad, _ctx, state) do
-    demands = List.delete(state.demands, {:demand, {pad, 1}})
-    {:ok, %{state | demands: demands}}
+  def handle_pad_added(Pad.ref(:input, _id), _ctx, state) do
+    {:ok, state}
   end
 
   @impl true
