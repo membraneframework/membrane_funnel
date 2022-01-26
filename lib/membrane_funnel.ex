@@ -1,7 +1,8 @@
 defmodule Membrane.Funnel do
   @moduledoc """
   Element that can be used for collecting data from multiple inputs and sending it through one
-  output.
+  output. When a new input connects in the `:playing` state, the funnel sends
+  `Membrane.Funnel.NewInputEvent` via output.
   """
   use Membrane.Filter
 
