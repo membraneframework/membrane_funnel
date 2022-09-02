@@ -44,14 +44,10 @@ defmodule FunnelDemo do
     ]
 
     spec = %ParentSpec{children: children, links: links}
-    {{:ok, spec: spec}, %{}}
+    {{:ok, spec: spec, playback: :playing}, %{}}
   end
 end
 ```
-
-For more examples please refer to our [echo demo](https://github.com/membraneframework/membrane_demo/tree/echo/webrtc/echo)
-where we use funnel plugin to send two RTP streams using the same connection, or our integration
-tests.
 
 ## Copyright and License
 
