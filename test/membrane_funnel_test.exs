@@ -6,27 +6,20 @@ defmodule Membrane.FunnelTest do
   alias Membrane.{Buffer, Funnel, Testing}
 
   test "Collects multiple inputs" do
-    import Membrane.ParentSpec
+    import Membrane.ChildrenSpec
     data = 1..10
 
-    {:ok, pipeline} =
-      %Testing.Pipeline.Options{
-        elements: [
-          src1: %Testing.Source{output: data},
-          src2: %Testing.Source{output: data},
-          funnel: Funnel,
-          sink: Testing.Sink
-        ],
-        links: [
-          link(:src1) |> to(:funnel),
-          link(:src2) |> to(:funnel),
-          link(:funnel) |> to(:sink)
+    {:ok, _supervisor_pid, pipeline} =
+      Testing.Pipeline.start_link(
+        structure: [
+          child(:funnel, Funnel),
+          child(:src1, %Testing.Source{output: data}) |> get_child(:funnel),
+          child(:src2, %Testing.Source{output: data}) |> get_child(:funnel),
+          get_child(:funnel) |> child(:sink, Testing.Sink)
         ]
-      }
-      |> Testing.Pipeline.start_link()
+      )
 
-    assert_receive {Membrane.Testing.Pipeline, ^pipeline,
-                    {:playback_state_changed, :prepared, :playing}}
+    assert_pipeline_play(pipeline)
 
     data
     |> Enum.flat_map(&[&1, &1])
@@ -38,8 +31,5 @@ defmodule Membrane.FunnelTest do
     refute_sink_buffer(pipeline, :sink, _buffer, 0)
 
     Membrane.Pipeline.terminate(pipeline, blocking?: true)
-
-    assert_receive {Membrane.Testing.Pipeline, ^pipeline,
-                    {:playback_state_changed, :prepared, :stopped}}
   end
 end
