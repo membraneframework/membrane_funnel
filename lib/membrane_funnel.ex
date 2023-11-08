@@ -8,8 +8,8 @@ defmodule Membrane.Funnel do
 
   alias Membrane.Funnel
 
-  def_input_pad :input, demand_mode: :auto, accepted_format: _any, availability: :on_request
-  def_output_pad :output, accepted_format: _any, demand_mode: :auto
+  def_input_pad :input, accepted_format: _any, flow_control: :auto, availability: :on_request
+  def_output_pad :output, accepted_format: _any, flow_control: :auto
 
   def_options end_of_stream: [spec: :on_last_pad | :never, default: :on_last_pad]
 
@@ -19,7 +19,7 @@ defmodule Membrane.Funnel do
   end
 
   @impl true
-  def handle_process(Pad.ref(:input, _id), buffer, _ctx, state) do
+  def handle_buffer(Pad.ref(:input, _id), buffer, _ctx, state) do
     {[buffer: {:output, buffer}], state}
   end
 
