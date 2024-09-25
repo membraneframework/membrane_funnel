@@ -11,7 +11,7 @@ defmodule Membrane.Funnel do
   def_input_pad :input, accepted_format: _any, flow_control: :auto, availability: :on_request
   def_output_pad :output, accepted_format: _any, flow_control: :auto
 
-  def_options end_of_stream: [spec: :on_last_pad | :never, default: :on_last_pad]
+  def_options end_of_stream: [spec: :on_last_pad | :on_first_pad | :never, default: :on_last_pad]
 
   @impl true
   def handle_init(_ctx, opts) do
@@ -36,6 +36,15 @@ defmodule Membrane.Funnel do
   @impl true
   def handle_end_of_stream(Pad.ref(:input, _id), _ctx, %{end_of_stream: :never} = state) do
     {[], state}
+  end
+
+  @impl true
+  def handle_end_of_stream(Pad.ref(:input, _id), ctx, %{end_of_stream: :on_first_pad} = state) do
+    if ctx.pads.output.end_of_stream? do
+      {[], state}
+    else
+      {[end_of_stream: :output], state}
+    end
   end
 
   @impl true
