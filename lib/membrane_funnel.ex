@@ -1,13 +1,13 @@
-if :code.module_status(Membrane.Funnel) == :not_loaded do
-  defmodule Membrane.Funnel do
+module_name = Membrane.Funnel
+
+if not Code.ensure_loaded?(module_name) do
+  defmodule module_name do
     @moduledoc """
     Element that can be used for collecting data from multiple inputs and sending it through one
     output. When a new input connects in the `:playing` state, the funnel sends
     `Membrane.Funnel.NewInputEvent` via output.
     """
     use Membrane.Filter
-
-    alias Membrane.Funnel
 
     def_input_pad :input, accepted_format: _any, flow_control: :auto, availability: :on_request
     def_output_pad :output, accepted_format: _any, flow_control: :auto
@@ -29,7 +29,7 @@ if :code.module_status(Membrane.Funnel) == :not_loaded do
 
     @impl true
     def handle_pad_added(Pad.ref(:input, _id), %{playback_state: :playing}, state) do
-      {[event: {:output, %Funnel.NewInputEvent{}}], state}
+      {[event: {:output, %__MODULE__.NewInputEvent{}}], state}
     end
 
     @impl true
